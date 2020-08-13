@@ -14,7 +14,7 @@ def read_config():
 def read_audio(directory_path):
     """
     :param directory_path:
-    :return:List of array of files path.
+    :return:List of array of raw data.
     """
     file_path = glob.glob(directory_path)
     file_path.sort()
@@ -22,30 +22,42 @@ def read_audio(directory_path):
     return raw_list
 
 
-def cut_out_data(df_raw, window_length, slide_length, fs):
-    window_length = 10  # sec
-    slide_length = 1  # sec
-    #------------------------------------------------------------------------------
-    signal_30sec = [df_raw[i][round(round(len(df_raw[i]) / 2) - fs * 15): round(round(len(df_raw[i]) / 2) + fs * 15)] for i in range(len(df_raw))]
-    signal_cut = []
-    for sig in signal_30sec:
-        sig_cut = [sig[i:i+fs*window_length] for i in range(0,len(sig)-window_length*fs,int(slide_length*fs))]
-        signal_cut.append(sig_cut)
-    signal_cut = np.array(signal_cut)
-    signal_cut_slide = signal_cut.reshape(int(signal_cut.shape[0]*signal_cut.shape[1]), signal_cut.shape[2])
+def cut_overlap(raw_list):
+    """
+    This function cut data to 30 seconds and overlap data to increase it.
+    :param raw_list: list of array of raw data.
+    :return: type: array, shape: (batch, fs*window_length)
+    """
+    # parameters ------------------------------------------------------------------
+    config_ini = read_config()
+    window_length = config_ini.getint('PRE_PROCESSING', 'window_length')  # sec
+    slide_length = config_ini.getint('PRE_PROCESSING', 'slide_length')  # sec
+    cut_length = config_ini.getint('PRE_PROCESSING', 'cut_length')  # sec (30/2)
+    fs = config_ini.getint('PRE_PROCESSING', 'fs')  # Hz
+    # ------------------------------------------------------------------------------
+    cut_list = [raw_list[i][int(len(raw_list[i])/2 - fs*cut_length): int(len(raw_list[i])/2 + fs*cut_length)] for i in range(len(raw_list))]
+    overlapped = []
+    for sig in cut_list:
+        sig_over = [sig[i: i + int(fs*window_length)] for i in range(0, len(sig)-int(window_length*fs), int(slide_length*fs))]
+        overlapped.append(sig_over)
+    overlapped = np.array(overlapped)
+    return overlapped.reshape(int(overlapped.shape[0]*overlapped.shape[1]), overlapped.shape[2])
 
-def stft_spectrogram(data, window_length, slide_length, low_freq, high_freq, bins, fs):
+
+def stft_spectrogram(data):
     """
     This function is short time fourier transform with hamming window.
     :param data
-    :param window_length: unit second
-    :param slide_length: unit second
-    :param low_freq: unit Hz (low of frequency range for spectrogram)
-    :param high_freq: unit Hz (high of frequency range for spectrogram)
-    :param bins : int (bin of frequency)
-    :param fs : sampling frequency
     :return:
     """
+    # parameters -------------------------------------------------------------
+    config_ini = read_config()
+    window_length = config_ini.getint('STFT', 'window_length')
+    slide_length = config_ini.getint('STFT', 'slide_length')
+    high_freq =
+    low_freq =
+    bins =
+    # ------------------------------------------------------------------------
     power_list = []
     for i in range(0, int(len(data)-window_length*fs), (int(slide_length*fs))):
         power, freq = util_func.power_spectrum_gain(util_func.hamming_window(data[i: i+int(fs*window_length)]), fs)

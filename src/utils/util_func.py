@@ -23,12 +23,12 @@ def hamming_window(data):
     return data * win_hamming
 
 
-def min_max_norm(data):
+def min_max_image(data):
     """
     :param data: shape:(batch,)
-    :return: Normalized data , shape:same size as input
+    :return: Normalized data , shape:same size as input, range 0 to 255
     """
     data = np.array(data)
     x_min = np.nanmin(data)
     x_max = np.nanmax(data)
-    return (data - x_min) / (x_max - x_min) * (1 + 1) - 1
+    return (data-x_min)/(x_max-x_min)*(255-0)

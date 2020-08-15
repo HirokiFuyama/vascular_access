@@ -66,8 +66,7 @@ def stft_spectrogram(data):
     # ------------------------------------------------------------------------
     power_list = []
     for i in range(0, int(len(data)-window_length*fs), (int(slide_length*fs))):
-        # power, freq = util_func.power_spectrum(util_func.hamming_window(data[i: i+int(fs*window_length)]), fs)
-        power, freq = util_func.power_spectrum(data[i: i+int(fs*window_length)], fs)
+        power, freq = util_func.power_spectrum(util_func.hamming_window(data[i: i+int(fs*window_length)]), fs)
         index_low = int(low_freq/freq[1])
         index_high = int(high_freq/freq[1])
         power = power[index_low:index_high]
@@ -127,7 +126,7 @@ def spectrogram_image(data, save_path):
         spe_array = spectrogram[i].T
         image = Image.fromarray(spe_array.astype(np.uint8))
         image.save(save_path + "spectrogram{}.png".format(i))
-        # # For test ----------------------------------------------------
+        # For test ----------------------------------------------------
         # import matplotlib.pyplot as plt
         # plt.imshow(image)
         # plt.show()

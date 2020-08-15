@@ -3,7 +3,7 @@ from scipy import signal
 import numpy as np
 
 
-def power_spectrum_gain(data, fs):
+def power_spectrum(data, fs):
     """
     :param data:
     :param fs: unit Hz

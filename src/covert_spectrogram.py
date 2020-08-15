@@ -20,17 +20,17 @@ def read_audio(directory_path):
     """
     file_path = glob.glob(directory_path)
     file_path.sort()
-    raw_list = [sf.read(file_path[i])[0] for i in range(len(file_path))]
+    raw_data = [sf.read(file_path[i])[0] for i in range(len(file_path))]
     if file_path == []:
         print('FileNotFoundError: No such file or directory: ', file=sys.stderr)
         sys.exit(1)
-    return raw_list
+    return raw_data
 
 
-def cut_overlap(raw_list):
+def cut_overlap(raw_data):
     """
     This function cut data to 30 seconds and overlap data to increase it.
-    :param raw_list: list of array of raw data.
+    :param raw_data: list of array of raw data.
     :return: type: array, shape: (batch, fs*window_length)
     """
     # parameters ------------------------------------------------------------------
@@ -38,9 +38,9 @@ def cut_overlap(raw_list):
     window_length = config_ini.getint('PRE_PROCESSING', 'window_length')  # sec
     slide_length = config_ini.getint('PRE_PROCESSING', 'slide_length')  # sec
     cut_length = config_ini.getint('PRE_PROCESSING', 'cut_length')  # sec (30/2)
-    fs = config_ini.getint('PRE_PROCESSING', 'fs')  # Hz
+    fs = config_ini.getint('SAMPLING_FREQUENCY', 'fs')  # Hz
     # ------------------------------------------------------------------------------
-    cut_list = [raw_list[i][int(len(raw_list[i])/2 - fs*cut_length): int(len(raw_list[i])/2 + fs*cut_length)] for i in range(len(raw_list))]
+    cut_list = [raw_data[i][int(len(raw_data[i]) / 2 - fs * cut_length): int(len(raw_data[i]) / 2 + fs * cut_length)] for i in range(len(raw_data))]
     overlapped = []
     for sig in cut_list:
         sig_over = [sig[i: i + int(fs*window_length)] for i in range(0, len(sig)-int(window_length*fs), int(slide_length*fs))]
@@ -58,14 +58,16 @@ def stft_spectrogram(data):
     # parameters -------------------------------------------------------------
     config_ini = read_config()
     window_length = config_ini.getint('STFT', 'window_length')
-    slide_length = config_ini.getint('STFT', 'slide_length')
-    high_freq = config_ini.getint('STFT', 'frequency_low')
+    slide_length = config_ini.getfloat('STFT', 'slide_length')
+    high_freq = config_ini.getint('STFT', 'frequency_high')
     low_freq = config_ini.getint('STFT', 'frequency_low')
     bins = config_ini.getint('STFT', 'bins')
+    fs = config_ini.getint('SAMPLING_FREQUENCY', 'fs')
     # ------------------------------------------------------------------------
     power_list = []
     for i in range(0, int(len(data)-window_length*fs), (int(slide_length*fs))):
-        power, freq = util_func.power_spectrum_gain(util_func.hamming_window(data[i: i+int(fs*window_length)]), fs)
+        # power, freq = util_func.power_spectrum(util_func.hamming_window(data[i: i+int(fs*window_length)]), fs)
+        power, freq = util_func.power_spectrum(data[i: i+int(fs*window_length)], fs)
         index_low = int(low_freq/freq[1])
         index_high = int(high_freq/freq[1])
         power = power[index_low:index_high]
@@ -74,9 +76,42 @@ def stft_spectrogram(data):
     return util_func.min_max_image(power_list)
 
 
+def padding(spectrogram_array):
+    """
+    :param spectrogram_array: shape==(,,,)
+    :return:
+    """
+    # parameters -------------------------------------
+    cofig_ini = read_config()
+    image_len = cofig_ini.getint("IMAGE", 'shape')
+    # ------------------------------------------------
+    diff_row = spectrogram_array.shape[1] - image_len
+    diff_col = spectrogram_array.shape[2] - image_len
+    try:
+        if diff_row <= 0 and diff_col <= 0:
+            spectrogram = np.pad(spectrogram_array, [(0, 0), (0, abs(diff_row)), (0, abs(diff_col))], 'constant')
+
+        elif diff_row <= 0 and diff_col >= 0:
+            spectrogram = np.pad(spectrogram_array, [(0, 0), (0, abs(diff_row)+diff_col), (0, 0)], 'constant')
+
+        elif diff_row >= 0 and diff_col <= 0:
+            spectrogram = np.pad(spectrogram_array, [(0, 0), (0, 0), (0, abs(diff_col)+diff_row)], 'constant')
+
+        elif diff_row >= 0 and diff_col >= 0:
+            diff = diff_row - diff_col
+            if diff <= 0:
+                spectrogram = np.pad(spectrogram_array, [(0, 0), (0, abs(diff)), (0, 0)], 'constant')
+            elif diff >= 0:
+                spectrogram = np.pad(spectrogram_array, [(0, 0), (0, 0), (0, diff)], 'constant')
+    except:
+        print("Error: Can't padding :", file=sys.stderr)
+        sys.exit(1)
+    return spectrogram
+
+
 def spectrogram_image(data, save_path):
     """
-    Patting a spectrogram to square and saving it as an image.
+    padding a spectrogram to square and saving it as an image.
     :param data: return of stft_spectrogram function.
     :return: save image.
     """
@@ -85,37 +120,36 @@ def spectrogram_image(data, save_path):
     image_shape = config_ini.getint('IMAGE', 'shape')
     save_path = config_ini.get('PATH', 'save_image')
     # -----------------------------------------------------
-    spectrogram = []
-    for i in data:
-        spectrogram.append(stft_spectrogram(i))
+    spectrogram = [stft_spectrogram(i) for i in data]
     spectrogram = np.array(spectrogram)
-
-    if spectrogram.shape[1] < image_shape:
-        zero_pad = np.zeros([image_shape - spectrogram.shape[1], spectrogram.shape[2]])
-        spectrogram_pad = np.array([np.vstack([i, zero_pad]) for i in spectrogram])
-
-    if spectrogram.shape[2] < image_shape:
-        zero_pad = np.zeros([spectrogram.shape[1], image_shape - spectrogram_pad.shape[2]])
-        spectrogram_pad2 = np.array([np.concatenate([i, zero_pad], axis=1) for i in spectrogram_pad])
-
-    for i in range(len(spectrogram_pad2)):
-        spe_array = spectrogram_pad2[i].T
+    spectrogram = padding(spectrogram)
+    for i in range(len(spectrogram)):
+        spe_array = spectrogram[i].T
         image = Image.fromarray(spe_array.astype(np.uint8))
-        # image.save(save_path + "spectrogram{}.png".format(i))
-        print(save_path + "spectrogram{}.png".format(i))
+        image.save(save_path + "spectrogram{}.png".format(i))
+        # # For test ----------------------------------------------------
+        # import matplotlib.pyplot as plt
+        # plt.imshow(image)
+        # plt.show()
+        # if i == 5:
+        #     break
 
 
-def run()
+def run(directory_path, save_path):
+    """
 
-# test-----------------------------------------------------------
-dire_path = '/Users/hiroki/github/vascular_access/data/A/*.wav'
-fs = 441000
+    :param directory_path:
+    :param save_path:
+    :return:
+    """
+    raw_data = read_audio(directory_path)
+    cut_data = cut_overlap(raw_data)
+    return spectrogram_image(cut_data, save_path)
 
 
-sig = read_audio(dire_path)
-print(len(sig))
-import matplotlib.pyplot as plt
-p,f = util_func.power_spectrum_gain(sig[0],fs)
-plt.plot(f,p)
-plt.show()
 
+# # test-----------------------------------------------------------
+# cofig_ini = read_config()
+# dir = '/Users/hiroki/github/vascular_access/data/test/*.wav'
+# save = cofig_ini.get('PATH', 'save_image')
+# run(dir, save)

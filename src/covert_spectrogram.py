@@ -2,15 +2,10 @@ import numpy as np
 import glob
 import sys
 import soundfile as sf
-import configparser
 from PIL import Image
+
 from utils import util_func
-
-
-def read_config():
-    config_ini = configparser.ConfigParser()
-    config_ini.read("config.ini")
-    return config_ini
+from utils import read_config
 
 
 def read_audio():
@@ -18,7 +13,7 @@ def read_audio():
     :return:List of array of raw data.
     """
     # parameters ------------------------------------------------
-    config_ini = read_config()
+    config_ini = read_config.read_config()
     directory_path = config_ini.get('PATH', 'data_directory')
     # -----------------------------------------------------------
     file_path = glob.glob(directory_path)
@@ -37,7 +32,7 @@ def cut_overlap(raw_data):
     :return: type: array, shape: (batch, fs*window_length)
     """
     # parameters ------------------------------------------------------------------
-    config_ini = read_config()
+    config_ini = read_config.read_config()
     window_length = config_ini.getint('PRE_PROCESSING', 'window_length')  # sec
     slide_length = config_ini.getint('PRE_PROCESSING', 'slide_length')  # sec
     cut_length = config_ini.getint('PRE_PROCESSING', 'cut_length')  # sec (30/2)
@@ -59,7 +54,7 @@ def stft_spectrogram(data):
     :return:
     """
     # parameters -------------------------------------------------------------
-    config_ini = read_config()
+    config_ini = read_config.read_config()
     window_length = config_ini.getint('STFT', 'window_length')
     slide_length = config_ini.getfloat('STFT', 'slide_length')
     high_freq = config_ini.getint('STFT', 'frequency_high')
@@ -84,7 +79,7 @@ def padding(spectrogram_array):
     :return:
     """
     # parameters -------------------------------------
-    cofig_ini = read_config()
+    cofig_ini = read_config.read_config()
     image_len = cofig_ini.getint("IMAGE", 'shape')
     # ------------------------------------------------
     diff_row = spectrogram_array.shape[1] - image_len
@@ -118,7 +113,7 @@ def spectrogram_image(data):
     :return: save image.
     """
     # parameters ------------------------------------------
-    config_ini = read_config()
+    config_ini = read_config.read_config()
     save_path = config_ini.get('PATH', 'save_image')
     # -----------------------------------------------------
     spectrogram = [stft_spectrogram(i) for i in data]
@@ -128,7 +123,7 @@ def spectrogram_image(data):
         spe_array = spectrogram[i].T
         image = Image.fromarray(spe_array.astype(np.uint8))
         image.save(save_path + "spectrogram{}.png".format(i))
-        # For test ----------------------------------------------------
+        # For test, cheack image ----------------------------------------------------
         # import matplotlib.pyplot as plt
         # plt.imshow(image)
         # plt.show()
@@ -142,8 +137,5 @@ def run():
     return spectrogram_image(cut_data)
 
 
-# # test-----------------------------------------------------------
-# cofig_ini = read_config()
-# dir = '/Users/hiroki/github/vascular_access/data/test/*.wav'
-# save = cofig_ini.get('PATH', 'save_image')
+# test-----------------------------------------------------------
 # run()

@@ -3,10 +3,18 @@ import torch.nn as nn
 from torchvision import transforms
 from PIL import Image
 
+from utils import read_config
+
 
 class Generator(nn.Module):
 
-    def __init__(self, z_dim=50, image_size=128):
+    # parameters -------------------------------------------------
+    config_ini = read_config.read_config()
+    dim = config_ini.getint('GENERATOR', 'z_dim')
+    size = config_ini.getint('GENERATOR', 'image_size')
+    # ------------------------------------------------------------
+
+    def __init__(self, z_dim=dim, image_size=size):
         super(Generator, self).__init__()
 
         self.layer1 = nn.Sequential(
@@ -50,7 +58,12 @@ class Generator(nn.Module):
 
 class Discriminator(nn.Module):
 
-    def __init__(self, image_size=128):
+    # parameters -------------------------------------------------
+    config_ini = read_config.read_config()
+    size = config_ini.getint('DISCRIMINATOR', 'image_size')
+    # ------------------------------------------------------------
+
+    def __init__(self, image_size=size):
         super(Discriminator, self).__init__()
 
         self.layer1 = nn.Sequential(

@@ -127,30 +127,23 @@ def spectrogram_image(data):
     for i in range(len(spectrogram)):
         spe_array = spectrogram[i].T
         image = Image.fromarray(spe_array.astype(np.uint8))
-        # image.save(save_path + "spectrogram{}.png".format(i))
+        image.save(save_path + "spectrogram{}.png".format(i))
         # For test ----------------------------------------------------
-        import matplotlib.pyplot as plt
-        plt.imshow(image)
-        plt.show()
-        if i == 5:
-            break
+        # import matplotlib.pyplot as plt
+        # plt.imshow(image)
+        # plt.show()
+        # if i == 5:
+        #     break
 
 
 def run():
-    """
-
-    :param directory_path:
-    :param save_path:
-    :return:
-    """
     raw_data = read_audio()
     cut_data = cut_overlap(raw_data)
     return spectrogram_image(cut_data)
 
 
-
-# test-----------------------------------------------------------
-cofig_ini = read_config()
-dir = '/Users/hiroki/github/vascular_access/data/test/*.wav'
-save = cofig_ini.get('PATH', 'save_image')
-run()
+# # test-----------------------------------------------------------
+# cofig_ini = read_config()
+# dir = '/Users/hiroki/github/vascular_access/data/test/*.wav'
+# save = cofig_ini.get('PATH', 'save_image')
+# run()

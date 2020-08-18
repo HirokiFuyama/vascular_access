@@ -10,3 +10,5 @@ V : Vein side (near the elbow)
 Only one sample of each is up here.     
 All data is available for free download on kaggle and for more information, please refer to the following URL.
 
+It is the first public dataset that I know of that continuously tracks sounds of vascular access.
+I hope that this dataset will contribute to the development of this field.

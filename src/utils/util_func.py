@@ -10,11 +10,11 @@ def power_spectrum(data, fs):
     :return: power spectrum, frequency (fs/2)
     """
     n = len(data)
-    y = fftpack.fft(data) / n
-    y = y[0:round(n / 2)]
+    y = fftpack.fft(data)/n
+    y = y[0:round(n/2)]
     power = 2 * (np.abs(y) ** 2)
     power = 10 * np.log10(power)
-    freq = np.arange(0, fs / 2, fs / (n-1))
+    freq = np.arange(0, fs/2, fs/n)
     return power, freq
 
 

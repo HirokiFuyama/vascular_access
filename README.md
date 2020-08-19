@@ -1,8 +1,6 @@
 # AnoGAN for spectrogram of vascular access sound.
 Repository for the code used in vascular access study.    
-It was presented at the 30th Congress of Japan Association for Clinical Engineers in japanese. (2020.9.20)    
-This dataset used in the study is also available that is the first public dataset that I know of that continuously tracks sounds of vascular access.    
-I hope that this dataset will contribute to the development of this field.
+This dataset used in the study is also available that is the first public dataset that I know of that continuously tracks sounds of vascular access. I hope that this dataset will contribute to the development of this field.
 
 ## Contents
 1. Convert sound of vascular access to spectrogram.
@@ -20,3 +18,6 @@ All data is available for free download on kaggle and for more information, plea
 
 It is the first public dataset that I know of that continuously tracks sounds of vascular access.
 I hope that this dataset will contribute to the development of this field.
+
+## History
+2020.9 : The 30th Congress of Japan Association for Clinical Engineers in japanese.

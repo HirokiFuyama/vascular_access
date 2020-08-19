@@ -8,13 +8,13 @@ from utils import util_func
 from utils import read_config
 
 
-def read_audio():
+def read_audio(directory_path):
     """
     :return:List of array of raw data.
     """
     # parameters ------------------------------------------------
-    config_ini = read_config.read_config()
-    directory_path = config_ini.get('PATH', 'data_directory')
+    # config_ini = read_config.read_config()
+    # directory_path = config_ini.get('PATH', 'data_directory')
     # -----------------------------------------------------------
     file_path = glob.glob(directory_path)
     file_path.sort()
@@ -131,11 +131,27 @@ def spectrogram_image(data):
         #     break
 
 
-def run():
-    raw_data = read_audio()
+def run(directory_path):
+    raw_data = read_audio(directory_path)
     cut_data = cut_overlap(raw_data)
     return spectrogram_image(cut_data)
 
 
+def unit_test(directory_path):
+    """
+    This function for unittest.
+    :param directory_path:
+    :return:
+    """
+    raw_data = read_audio(directory_path)
+    cut_data = cut_overlap(raw_data)
+    spectrogram = [stft_spectrogram(i) for i in cut_data]
+    spectrogram = np.array(spectrogram)
+    spectrogram = padding(spectrogram)
+    image = Image.fromarray(spectrogram[0].T.astype(np.uint8))
+    image_array = np.asarray(image)
+    return image_array[0].tolist()
+
+
 # test-----------------------------------------------------------
-# run()
+image = unit_test('/Users/hiroki/github/vascular_access/data/test/*.wav')

@@ -1,4 +1,7 @@
-# AnoGAN for spectrogram of vascular access
+# AnoGAN for spectrogram of vascular access sound.
+Repository for the code used in vascular access study.
+
+## Contents
 
 ## Dataset overview
 This dataset is based on recordings of vascular access sounds in dialysis patients.    

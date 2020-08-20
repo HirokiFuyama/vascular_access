@@ -1,4 +1,4 @@
-# AnoGAN for spectrogram of vascular access sound.
+# Vascular access sound analysis
 Repository for the code used in vascular access study.    
 This dataset used in the study is also available that is the first public dataset that I know of that continuously tracks sounds of vascular access. I hope that this dataset will contribute to the development of this field.
 
@@ -16,8 +16,8 @@ V : Vein side (near the elbow)
 Only one sample of each is up here.     
 All data is available for free download on kaggle and for more information, please refer to the following URL.
 
-It is the first public dataset that I know of that continuously tracks sounds of vascular access.
-I hope that this dataset will contribute to the development of this field.
 
-## History
-2020.9 : The 30th Congress of Japan Association for Clinical Engineers in japanese.
+## Conference
+2020:    
+第30回日本臨床工学会 ( The 30th Congress of Japan Association for Clinical Engineers in japanese)    
+Title：「深層学習（敵対的生成ネットワーク）を用いたシャント音の変化検知（Detecting Changes in Shunt Sound Using Deep Learning (Generative Adversarial Network)」

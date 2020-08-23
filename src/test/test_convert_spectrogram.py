@@ -1,5 +1,6 @@
 import unittest
-from src import convert_spectrogram
+from pre_processing import convert_spectrogram
+
 
 class TestConvertSpectrogram(unittest.TestCase):
 

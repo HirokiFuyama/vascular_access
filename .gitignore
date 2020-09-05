@@ -1,8 +1,16 @@
 /notebooks/
+
 /output_wav/
+
 /venv/
+
 /document/
+
 /figure/test/
 /figure/test_noise2/
 /figure/train/
+
 /.ipynb_checkpoints/
+
+/model/D_400ep_100dim.pt/
+/model/G_400ep_100dim.pt/

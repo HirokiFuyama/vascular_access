@@ -8,7 +8,7 @@ class TestConvertSpectrogram(unittest.TestCase):
         """
         :return:
         """
-        test_file_path = '~/vascular_access/data/test/*.wav'
+        test_file_path = '/Users/hiroki/github/vascular_access/data/test/*.wav'
         expected = [105, 105, 111, 119, 132, 144, 145, 158, 159, 149, 136, 143, 142,
                     144, 143, 138, 130, 118, 102, 108, 117, 121, 120, 110, 119, 129,
                     148, 165, 174, 176, 173, 167, 162, 156, 146, 144, 127, 128, 140,

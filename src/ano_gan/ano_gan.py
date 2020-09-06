@@ -15,7 +15,7 @@ def read_model():
     G = config_ini.get('PATH', 'g_save')
     D = config_ini.get('PATH', 'd_save')
     # ---------------------------------------------
-    return G, D
+    return torch.load(G), torch.load(D)
 
 
 def read_data(path_type=True):

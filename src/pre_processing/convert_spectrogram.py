@@ -4,17 +4,18 @@ import sys
 import soundfile as sf
 from PIL import Image
 
-from utils import util_func, read_config
+from src.utils import util_func, read_config
 
 
-def read_audio(directory_path):
+def read_audio(directory_path=None):
     """
     :return:List of array of raw data.
     """
-    # parameters ------------------------------------------------
-    config_ini = read_config.read_config()
-    directory_path = config_ini.get('PATH', 'data_directory')
-    # -----------------------------------------------------------
+    if directory_path is None:
+        # parameters ------------------------------------------------
+        config_ini = read_config.read_config()
+        directory_path = config_ini.get('PATH', 'data_directory')
+        # -----------------------------------------------------------
     file_path = glob.glob(directory_path)
     file_path.sort()
     raw_data = [sf.read(file_path[i])[0] for i in range(len(file_path))]
@@ -49,8 +50,6 @@ def cut_overlap(raw_data):
 def stft_spectrogram(data):
     """
     This function calculate the spectrogram using STFT with hamming window.
-    :param data
-    :return:
     """
     # parameters -------------------------------------------------------------
     config_ini = read_config.read_config()

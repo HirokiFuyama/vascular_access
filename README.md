@@ -21,3 +21,4 @@ https://www.kaggle.com/dataset/f65ae7ac8c299607428b2c200204a546869a049c6c76e29f6
 2020:    
 第30回日本臨床工学会 ( The 30th Congress of Japan Association for Clinical Engineers in japanese)    
 Title：「深層学習（敵対的生成ネットワーク）を用いたシャント音の変化検知（Detecting Changes in Shunt Sound Using Deep Learning (Generative Adversarial Network)」
+URL : https://www2.slideshare.net/HirokiFuruyama/vascular-access-sound-analysis-239617639
